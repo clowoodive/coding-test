@@ -58,12 +58,31 @@ class Trees2263 { // 제출시 Main으로 변경
 
         result.add(post[postR]);
 
-        for (int i = 0; inL + i <= inR; i++) {
-            if (in[inL + i] == post[postR]) {
-                preOrder(inL, inL + i - 1, postL, postL + i - 1);
-                preOrder(inL + i + 1, inR, postL + i, postR - 1);
-                return; // 뒤에 체크 불필요
+        int inRootIdx = 0;
+        for (int i = inL; i <= inR; i++) {
+            if (in[i] == post[postR]) {
+                inRootIdx = i;
+                break;
             }
         }
+
+        int leftNodeCnt = inRootIdx - inL;
+        preOrder(inL, inRootIdx - 1, postL, postL + leftNodeCnt - 1);
+        preOrder(inRootIdx + 1, inR, postL + leftNodeCnt, postR - 1);
     }
+
+//    private static void preOrder(int inL, int inR, int postL, int postR) {
+//        if (inL > inR || postL > postR)
+//            return;
+//
+//        result.add(post[postR]);
+//
+//        for (int i = 0; inL + i <= inR; i++) {
+//            if (in[inL + i] == post[postR]) {
+//                preOrder(inL, inL + i - 1, postL, postL + i - 1);
+//                preOrder(inL + i + 1, inR, postL + i, postR - 1);
+//                return; // 뒤에 체크 불필요
+//            }
+//        }
+//    }
 }
