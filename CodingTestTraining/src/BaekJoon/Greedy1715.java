@@ -1,7 +1,10 @@
 package BaekJoon; // 제출시 제외
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /*
  * 백준 1715 - 카드 정렬하기
@@ -21,29 +24,58 @@ import java.util.Scanner;
  * 결과 : 100
  * */
 
+// 1회차
 class Greedy1715 { // 제출시 Main으로 변경
-    private static int n;
+    private static int N;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
 
-        PriorityQueue<Integer> pQ = new PriorityQueue<>();
-
-        for (int i = 0; i < n; i++) {
-            pQ.add(scanner.nextInt());
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < N; i++) {
+            pq.add(Integer.parseInt(br.readLine()));
         }
 
-        int compareTotal = 0;
+        int compareCount = 0;
+        while (pq.size() > 1) {
+            int pack1 = pq.poll();
+            int pack2 = pq.poll();
+            int compCnt = pack1 + pack2;
+            compareCount += compCnt;
 
-        while (pQ.size() > 1) {
-            Integer packVal1 = pQ.remove();
-            Integer packVal2 = pQ.remove();
-            int compareSum = packVal1 + packVal2;
-            pQ.add(compareSum);
-            compareTotal += compareSum;
+            pq.add(compCnt);
         }
 
-        System.out.println(compareTotal);
+        System.out.println(compareCount);
     }
 }
+
+// 최초
+//class Greedy1715 { // 제출시 Main으로 변경
+//    private static int n;
+//
+//    public static void main(String[] args) {
+//        Scanner scanner = new Scanner(System.in);
+//        n = scanner.nextInt();
+//
+//        PriorityQueue<Integer> pQ = new PriorityQueue<>();
+//
+//        for (int i = 0; i < n; i++) {
+//            pQ.add(scanner.nextInt());
+//        }
+//
+//        int compareTotal = 0;
+//
+//        while (pQ.size() > 1) {
+//            Integer packVal1 = pQ.remove();
+//            Integer packVal2 = pQ.remove();
+//            int compareSum = packVal1 + packVal2;
+//            pQ.add(compareSum);
+//            compareTotal += compareSum;
+//        }
+//
+//        System.out.println(compareTotal);
+//    }
+//}
