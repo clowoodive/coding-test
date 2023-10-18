@@ -18,58 +18,106 @@ import java.util.Scanner;
  * */
 class BruteForce9663 { // 제출시 Main으로 변경
 
-    private static int[] yBoard;
+    private static int N;
 
-    private static int caseCount;
+    private static int count;
 
-    private static int n;
+    private static int putPosX[];
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
+        N = scanner.nextInt();
 
-        yBoard = new int[n];
+        putPosX = new int[N];
 
-        putQueen(0);
+        recursion(0);
 
-        System.out.println(caseCount);
+        System.out.println(count);
     }
 
-    private static void putQueen(int indexY) {
-        if (indexY >= n) {
-            caseCount++;
-            return;
+    private static void recursion(int y) {
+        if (y >= N) {
+            count++;
         }
 
-        for (int x = 0; x < n; x++) {
-            if (canPut(indexY, x)) {
-                yBoard[indexY] = x;
-                putQueen(indexY + 1);
+        for (int x = 0; x < N; x++) {
+            if (canPut(y, x) == true) { // 놓을수 없다면 다음 y줄은 수행하지 않음.
+                putPosX[y] = x;
+                recursion(y + 1);
             }
         }
     }
 
-    private static boolean canPut(int indexY, int x) {
-        // indexY - 1 까지의 좌표들과 겹치는지 검사
-
-        for (int i = 0; i < indexY; i++) {
-            // 위쪽 밑 같은 행은 앞단계에서 이미 검증됨
-
-            // 같은 열에 있는 경우
-            if (yBoard[i] == x)
+    private static boolean canPut(int y, int x) {
+        for (int idxY = 0; idxY < y; idxY++) {
+            if (putPosX[idxY] == x) { // 같은 x 선상에 있는 경우
                 return false;
-
-            // 오른쪽 대각선에 있는 경우
-            if (indexY - i == x - yBoard[i])
+            }
+            int gap = y - idxY;
+            if (putPosX[idxY] + gap == x || putPosX[idxY] - gap == x) { // 대각선상에 있는 경우(y좌표 차이만큼 x좌표가 +,-로 어긋나 있으면 해당됨
                 return false;
-
-            // 왼쪽 아래 대각선에 있는 경우
-            if (indexY - i + x - yBoard[i] == 0)
-                return false;
+            }
         }
+
         return true;
     }
 }
+
+//// 최초 통과 버전
+//class BruteForce9663 { // 제출시 Main으로 변경
+//
+//    private static int[] yBoard;
+//
+//    private static int caseCount;
+//
+//    private static int n;
+//
+//    public static void main(String[] args) {
+//        Scanner scanner = new Scanner(System.in);
+//        n = scanner.nextInt();
+//
+//        yBoard = new int[n];
+//
+//        putQueen(0);
+//
+//        System.out.println(caseCount);
+//    }
+//
+//    private static void putQueen(int indexY) {
+//        if (indexY >= n) {
+//            caseCount++;
+//            return;
+//        }
+//
+//        for (int x = 0; x < n; x++) {
+//            if (canPut(indexY, x)) {
+//                yBoard[indexY] = x;
+//                putQueen(indexY + 1);
+//            }
+//        }
+//    }
+//
+//    private static boolean canPut(int indexY, int x) {
+//        // indexY - 1 까지의 좌표들과 겹치는지 검사
+//
+//        for (int i = 0; i < indexY; i++) {
+//            // 위쪽 밑 같은 행은 앞단계에서 이미 검증됨
+//
+//            // 같은 열에 있는 경우
+//            if (yBoard[i] == x)
+//                return false;
+//
+//            // 오른쪽 대각선에 있는 경우
+//            if (indexY - i == x - yBoard[i])
+//                return false;
+//
+//            // 왼쪽 아래 대각선에 있는 경우
+//            if (indexY - i + x - yBoard[i] == 0)
+//                return false;
+//        }
+//        return true;
+//    }
+//}
 
 // 최초 구현 버전 - 로직은 맞으나 최적화가 덜되었고 타임오버 발생
 
