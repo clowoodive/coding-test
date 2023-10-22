@@ -30,53 +30,106 @@ import java.util.StringTokenizer;
  * */
 
 class BinarySearch2110 { // 제출시 Main으로 변경
-    public static void main(String[] args) throws IOException {
-        int n;
-        int c;
+    private static int N;
+    private static int C;
+    private static int[] inputPos;
 
+    public static void main(String[] args) throws IOException {
         // BufferedReader & StringTokenizer
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
 
-        int[] inputPos = new int[n];
-        for (int i = 0; i < n; i++) {
+        inputPos = new int[N];
+        for (int i = 0; i < N; i++) {
             inputPos[i] = Integer.parseInt(br.readLine());
         }
 
         Arrays.sort(inputPos);
 
-        int minDist = 1; // 최소 거리
-        int maxDist = inputPos[n - 1] - inputPos[0]; // 최대 거리
-        int resultDist = 1;
+        int totalDist = inputPos[N - 1] - inputPos[0];
+        int minDist = 1;
+        int maxDist = totalDist / (C - 1);
 
-        while (minDist <= maxDist) {
-            int dist = (minDist + maxDist) / 2;
-
-            int wifiCnt = 1;
-            int prevWifiPos = inputPos[0];
-            for (int i = 1; i < n; i++) {
-                if (prevWifiPos + dist <= inputPos[i]) {
-                    wifiCnt++;
-                    prevWifiPos = inputPos[i];
-                }
-            }
-
-            if (wifiCnt >= c) {
-                minDist = dist + 1; //
-                if (resultDist < dist)
-                    resultDist = dist;
+        while (minDist < maxDist) {
+            var nowDist = (minDist + maxDist) / 2 + 1;
+            if (canPutModem(nowDist) == true) {
+                minDist = nowDist;
             } else {
-                maxDist = dist - 1;
+                maxDist = nowDist - 1;
             }
-
         }
 
-        System.out.println(resultDist);
+        System.out.println(minDist);
+    }
+
+    private static boolean canPutModem(int maxDist) {
+        int prevPosX = inputPos[0];
+        int cCount = 1; // 최초 좌표에 첫번째 공유기 놓았다고 가정.
+        for (int i = 1; i < N; i++) {
+            if (inputPos[i] >= prevPosX + maxDist) {
+                cCount++;
+                if (cCount >= C) {
+                    return true;
+                }
+                prevPosX = inputPos[i];
+            }
+        }
+        return false;
     }
 }
+
+// 이전 성공 케이스
+//class BinarySearch2110 { // 제출시 Main으로 변경
+//    public static void main(String[] args) throws IOException {
+//        int n;
+//        int c;
+//
+//        // BufferedReader & StringTokenizer
+//        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//
+//        StringTokenizer st = new StringTokenizer(br.readLine());
+//        n = Integer.parseInt(st.nextToken());
+//        c = Integer.parseInt(st.nextToken());
+//
+//        int[] inputPos = new int[n];
+//        for (int i = 0; i < n; i++) {
+//            inputPos[i] = Integer.parseInt(br.readLine());
+//        }
+//
+//        Arrays.sort(inputPos);
+//
+//        int minDist = 1; // 최소 거리
+//        int maxDist = inputPos[n - 1] - inputPos[0]; // 최대 거리
+//        int resultDist = 1;
+//
+//        while (minDist <= maxDist) {
+//            int dist = (minDist + maxDist) / 2;
+//
+//            int wifiCnt = 1;
+//            int prevWifiPos = inputPos[0];
+//            for (int i = 1; i < n; i++) {
+//                if (prevWifiPos + dist <= inputPos[i]) {
+//                    wifiCnt++;
+//                    prevWifiPos = inputPos[i];
+//                }
+//            }
+//
+//            if (wifiCnt >= c) {
+//                minDist = dist + 1; //
+//                if (resultDist < dist)
+//                    resultDist = dist;
+//            } else {
+//                maxDist = dist - 1;
+//            }
+//
+//        }
+//
+//        System.out.println(resultDist);
+//    }
+//}
 
 // 실패
 
