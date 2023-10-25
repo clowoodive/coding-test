@@ -58,11 +58,13 @@ class ShortestPath1753 { // 제출시 Main으로 변경
 
     private static int E = 0;
 
-    private static List<Map<Integer, Integer>> graphMapArray; // index : source, key : dest, val : dist
+    private static List<Map<Integer, Integer>> destDistMapList; // index : source, array[0] : dest, array[1] : dist
 
     private static boolean visited[];
 
-    private static int dist[];
+    private static int shortestDist[];
+
+    private static PriorityQueue<DestDist> pq = new PriorityQueue<>();
 
 
     public static void main(String[] args) throws IOException {
@@ -83,82 +85,73 @@ class ShortestPath1753 { // 제출시 Main으로 변경
         // 시작 정점
         int K = Integer.parseInt(br.readLine());
 
-        graphMapArray = new ArrayList<Map<Integer, Integer>>();
+        destDistMapList = new ArrayList<Map<Integer, Integer>>(V + 1);
         visited = new boolean[V + 1];
-        dist = new int[V + 1];
+        shortestDist = new int[V + 1];
 
         for (int i = 0; i < V + 1; i++) {
-            graphMapArray.add(new HashMap<>());
+            destDistMapList.add(new HashMap<>());
+            shortestDist[i] = Integer.MAX_VALUE;
         }
+//        Arrays.fill(shortestDist, Integer.MAX_VALUE);
+        shortestDist[0] = -1; // 출력시 무효
 
-        for (int i = 0; i < E; i++) {
-            StringTokenizer edge = new StringTokenizer(br.readLine());
-            int source = Integer.parseInt(edge.nextToken());
-            int dest = Integer.parseInt(edge.nextToken());
-            int dist = Integer.parseInt(edge.nextToken());
+        int src;
+        int dest;
+        int dist;
+        for (int i = 1; i < E + 1; i++) {
+            st = new StringTokenizer(br.readLine());
+            src = Integer.parseInt(st.nextToken());
+            dest = Integer.parseInt(st.nextToken());
+            dist = Integer.parseInt(st.nextToken());
 
-            Integer oldDist = graphMapArray.get(source).putIfAbsent(dest, dist);
-            if (oldDist != null && oldDist > dist) {
-                graphMapArray.get(source).put(dest, dist);
+            Integer prevVal = destDistMapList.get(src).putIfAbsent(dest, dist);
+            if (prevVal != null && prevVal > dist) {
+                destDistMapList.get(src).put(dest, dist); // replace랑 같은 동작
             }
         }
 
-        dijkstra(K);
+        shortestDist[K] = 0;
+        pq.add(new DestDist(K, 0));
+        dijkstra();
 
-        for (int n = 1; n < V + 1; n++) {
-            System.out.println(dist[n] == Integer.MAX_VALUE ? "INF" : dist[n]);
-        }
+        Arrays.stream(shortestDist).filter(d -> d >= 0).forEach(d -> System.out.println(d == Integer.MAX_VALUE ? "INF" : d));
+//        for (int n = 1; n < V + 1; n++) {
+//            System.out.println(shortestDist[n] == Integer.MAX_VALUE ? "INF" : shortestDist[n]);
+//        }
     }
 
-    private static void dijkstra(int startNode) {
-        PriorityQueue<DestDist> pq = new PriorityQueue<>();
-        pq.add(new DestDist(startNode, 0));
-
-        Arrays.fill(dist, Integer.MAX_VALUE);
-//        for (Map.Entry<Integer, Integer> entry : graphMapArray.get(startNode).entrySet()) {
-//            dist[entry.getKey()] = entry.getValue();
-//        }
-
-//        visited[startNode] = true;
-        dist[startNode] = 0;
-
+    private static void dijkstra() {
         while (pq.isEmpty() == false) {
             DestDist destDist = pq.poll();
-//            int nowNode = getShortestUnvisitedNode();
-            if(visited[destDist.getDest()] == true) continue;
-            visited[destDist.getDest()] = true;
+            int nowDest = destDist.getDest();
+            if (visited[nowDest] == true) {
+                continue;
+            }
+            visited[nowDest] = true;
 
-            for (Map.Entry<Integer, Integer> entry : graphMapArray.get(destDist.getDest()).entrySet()) {
+            Map<Integer, Integer> destDistMap = destDistMapList.get(nowDest);
+            if (destDistMap == null || destDistMap.isEmpty()) {
+                continue;
+            }
+
+            for (Map.Entry<Integer, Integer> entry : destDistMap.entrySet()) {
                 int dest = entry.getKey();
-                int distance = entry.getValue();
+                int dist = entry.getValue();
 
-                if (visited[dest] == true)
-                    continue;
+//                if (visited[dest] == true) {
+//                    continue;
+//                }
 
-                int newDist = dist[destDist.getDest()] + distance;
-                dist[dest] = Math.min(dist[dest], newDist);
+                int newDist = shortestDist[nowDest] + dist;
+                if (newDist < shortestDist[dest]) {
+                    shortestDist[dest] = newDist;
+                }
 
-                pq.add(new DestDist(dest, dist[dest]));
+                pq.add(new DestDist(dest, shortestDist[dest]));
             }
         }
     }
-
-//    private static int getShortestUnvisitedNode() {
-//        int minNode = 0;
-//        int minDist = Integer.MAX_VALUE;
-//
-//        for (int i = 1; i < V + 1; i++) {
-//            if (visited[i] == true)
-//                continue;
-//
-//            if (minDist > dist[i]) {
-//                minNode = i;
-//                minDist = dist[i];
-//            }
-//        }
-//
-//        return minNode;
-//    }
 
     private static class DestDist implements Comparable<DestDist> {
         private int dest;
@@ -191,6 +184,147 @@ class ShortestPath1753 { // 제출시 Main으로 변경
         }
     }
 }
+
+//// 우선순위 큐 사용(메모리는 123340KB으로 조금더 먹으나, 시간은 1344ms로 반가까이 줄어듬)
+//class ShortestPath1753 { // 제출시 Main으로 변경
+//
+//    private static int V = 0;
+//
+//    private static int E = 0;
+//
+//    private static List<Map<Integer, Integer>> graphMapArray; // index : source, key : dest, val : dist
+//
+//    private static boolean visited[];
+//
+//    private static int dist[];
+//
+//
+//    public static void main(String[] args) throws IOException {
+////        Scanner scanner = new Scanner(System.in);
+////        int n = scanner.nextInt();
+//
+//        // BufferedReader & StringTokenizer
+//        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//
+//        StringTokenizer st = new StringTokenizer(br.readLine());
+//
+//        // 정점의 개수
+//        V = Integer.parseInt(st.nextToken());
+//
+//        // 간선의 개수
+//        E = Integer.parseInt(st.nextToken());
+//
+//        // 시작 정점
+//        int K = Integer.parseInt(br.readLine());
+//
+//        graphMapArray = new ArrayList<Map<Integer, Integer>>();
+//        visited = new boolean[V + 1];
+//        dist = new int[V + 1];
+//
+//        for (int i = 0; i < V + 1; i++) {
+//            graphMapArray.add(new HashMap<>());
+//        }
+//
+//        for (int i = 0; i < E; i++) {
+//            StringTokenizer edge = new StringTokenizer(br.readLine());
+//            int source = Integer.parseInt(edge.nextToken());
+//            int dest = Integer.parseInt(edge.nextToken());
+//            int dist = Integer.parseInt(edge.nextToken());
+//
+//            Integer oldDist = graphMapArray.get(source).putIfAbsent(dest, dist);
+//            if (oldDist != null && oldDist > dist) {
+//                graphMapArray.get(source).put(dest, dist);
+//            }
+//        }
+//
+//        dijkstra(K);
+//
+//        for (int n = 1; n < V + 1; n++) {
+//            System.out.println(dist[n] == Integer.MAX_VALUE ? "INF" : dist[n]);
+//        }
+//    }
+//
+//    private static void dijkstra(int startNode) {
+//        PriorityQueue<DestDist> pq = new PriorityQueue<>();
+//        pq.add(new DestDist(startNode, 0));
+//
+//        Arrays.fill(dist, Integer.MAX_VALUE);
+////        for (Map.Entry<Integer, Integer> entry : graphMapArray.get(startNode).entrySet()) {
+////            dist[entry.getKey()] = entry.getValue();
+////        }
+//
+////        visited[startNode] = true;
+//        dist[startNode] = 0;
+//
+//        while (pq.isEmpty() == false) {
+//            DestDist destDist = pq.poll();
+////            int nowNode = getShortestUnvisitedNode();
+//            if(visited[destDist.getDest()] == true) continue;
+//            visited[destDist.getDest()] = true;
+//
+//            for (Map.Entry<Integer, Integer> entry : graphMapArray.get(destDist.getDest()).entrySet()) {
+//                int dest = entry.getKey();
+//                int distance = entry.getValue();
+//
+//                if (visited[dest] == true)
+//                    continue;
+//
+//                int newDist = dist[destDist.getDest()] + distance;
+//                dist[dest] = Math.min(dist[dest], newDist);
+//
+//                pq.add(new DestDist(dest, dist[dest]));
+//            }
+//        }
+//    }
+//
+////    private static int getShortestUnvisitedNode() {
+////        int minNode = 0;
+////        int minDist = Integer.MAX_VALUE;
+////
+////        for (int i = 1; i < V + 1; i++) {
+////            if (visited[i] == true)
+////                continue;
+////
+////            if (minDist > dist[i]) {
+////                minNode = i;
+////                minDist = dist[i];
+////            }
+////        }
+////
+////        return minNode;
+////    }
+//
+//    private static class DestDist implements Comparable<DestDist> {
+//        private int dest;
+//        private int dist;
+//
+//        public DestDist(int dest, int dist) {
+//            this.dest = dest;
+//            this.dist = dist;
+//        }
+//
+//        public int getDest() {
+//            return dest;
+//        }
+//
+//        public void setDest(int dest) {
+//            this.dest = dest;
+//        }
+//
+//        public int getDist() {
+//            return dist;
+//        }
+//
+//        public void setDist(int dist) {
+//            this.dist = dist;
+//        }
+//
+//        @Override
+//        public int compareTo(DestDist o) {
+//            return dist - o.dist; // 삽입된 값이 비교대상 노드와 같거나 크면 root로의 이동 멈춤(작은 값을 root로)
+//        }
+//    }
+//}
 
 
 //// 동일 노드간 중복 간선 덮어씌워지는 문제 해결해서 통과
