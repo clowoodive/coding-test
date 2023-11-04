@@ -18,17 +18,17 @@ import java.util.Scanner;
 class PrefixSum11659 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int arraySize = scanner.nextInt();
-        int questionCount = scanner.nextInt();
+        int N = scanner.nextInt();
+        int M = scanner.nextInt();
 
-        int[] inputArray = new int[arraySize + 1];
-        int[] prefixSumArray = new int[arraySize + 1];
-        for (int i = 1; i <= arraySize; i++) {
+        int[] inputArray = new int[N + 1];
+        int[] prefixSumArray = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
             inputArray[i] = scanner.nextInt();
             prefixSumArray[i] = inputArray[i] + prefixSumArray[i - 1];
         }
 
-        for (int i = 0; i < questionCount; i++) {
+        for (int i = 0; i < M; i++) {
             int startNum = scanner.nextInt();
             int endNum = scanner.nextInt();
 
@@ -36,3 +36,25 @@ class PrefixSum11659 {
         }
     }
 }
+
+//class PrefixSum11659 {
+//    public static void main(String[] args) {
+//        Scanner scanner = new Scanner(System.in);
+//        int arraySize = scanner.nextInt();
+//        int questionCount = scanner.nextInt();
+//
+//        int[] inputArray = new int[arraySize + 1];
+//        int[] prefixSumArray = new int[arraySize + 1];
+//        for (int i = 1; i <= arraySize; i++) {
+//            inputArray[i] = scanner.nextInt();
+//            prefixSumArray[i] = inputArray[i] + prefixSumArray[i - 1];
+//        }
+//
+//        for (int i = 0; i < questionCount; i++) {
+//            int startNum = scanner.nextInt();
+//            int endNum = scanner.nextInt();
+//
+//            System.out.println(prefixSumArray[endNum] - prefixSumArray[startNum - 1]);
+//        }
+//    }
+//}
